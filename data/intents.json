@@ -1,0 +1,23 @@
+{
+    "intents": [
+        {
+            "tag": "goodbye",
+            "patterns": [
+                "cya",
+                "see you",
+                "(bye)+",
+                "see you later",
+                "goodbye",
+                "exit",
+                "quit",
+                "end"
+            ],
+            "responses": [
+                "Sad to see you go :(",
+                "Talk to you later",
+                "Goodbye!",
+                "Come back soon"
+            ]
+        }
+    ]
+}

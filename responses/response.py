@@ -4,7 +4,7 @@ from dataclasses import dataclass
 @dataclass
 class ResponseFormat:
     """Response schema for the agent."""
-    # A punny response (always required)
-    punny_response: str
-    # Any interesting information about the weather if available
-    weather_conditions: str | None = None
+    # A response (always required)
+    response: str
+    # Coding languages used (optional)
+    languages: list[str] | None = None
