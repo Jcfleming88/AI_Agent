@@ -2,7 +2,7 @@ import os
 import re
 import random
 
-from tools.tools import *
+from tools.colour_tools import *
 from responses.response import *
 from models.models import *
 from utils.dictutils import *
@@ -42,7 +42,12 @@ class minico_llm:
         the last used language is known.
         """
 
-        self.tools = []
+        self.tools = [
+            get_colour_hex,
+            get_colour_hls,
+            get_random_colour,
+            get_opposite_colour,
+        ]
         
         self.checkpointer = InMemorySaver()
 
