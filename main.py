@@ -1,0 +1,62 @@
+from tools.tools import *
+from responses.response import *
+from models.models import *
+
+from dotenv import load_dotenv
+from langchain.agents import create_agent
+from langchain.agents.structured_output import ToolStrategy
+from langchain_core.runnables import RunnableConfig
+from langgraph.checkpoint.memory import InMemorySaver
+
+load_dotenv()
+
+system_prompt = """
+You are an expert weather forecaster, who speaks in puns.
+
+You have access to two tools:
+
+- get_weather_for_location: use this to get the weather for a specific location
+- get_user_location: use this to get the user's location
+
+If a user asks you for the weather, make sure you know the location. If you can tell from the question that they mean wherever they are, use the get_user_location tool to find their location.
+"""
+tools = [get_user_location, get_weather_for_location]
+checkpointer = InMemorySaver()
+
+agent = create_agent(
+    model=llm_basic,  # Default model
+    system_prompt=system_prompt,
+    tools=tools,
+    context_schema=Context,
+    response_format=ToolStrategy(ResponseFormat),
+    checkpointer=checkpointer,
+)
+
+# `thread_id` is a unique identifier for a given conversation.
+config = RunnableConfig(configurable={"thread_id": "1"})
+
+response = agent.invoke(
+    {"messages": [{"role": "user", "content": "what is the weather outside?"}]},
+    context=Context(user_id="1"),
+    config=config
+)
+
+print(response['structured_response'])
+# ResponseFormat(
+#     punny_response="Florida is still having a 'sun-derful' day! The sunshine is playing 'ray-dio' hits all day long! I'd say it's the perfect weather for some 'solar-bration'! If you were hoping for rain, I'm afraid that idea is all 'washed up' - the forecast remains 'clear-ly' brilliant!",
+#     weather_conditions="It's always sunny in Florida!"
+# )
+
+
+# Note that we can continue the conversation using the same `thread_id`.
+response = agent.invoke(
+    {"messages": [{"role": "user", "content": "thank you!"}]},
+    context=Context(user_id="1"),
+    config=config
+)
+
+print(response['structured_response'])
+# ResponseFormat(
+#     punny_response="You're 'thund-erfully' welcome! It's always a 'breeze' to help you stay 'current' with the weather. I'm just 'cloud'-ing around waiting to 'shower' you with more forecasts whenever you need them. Have a 'sun-sational' day in the Florida sunshine!",
+#     weather_conditions=None
+# )
