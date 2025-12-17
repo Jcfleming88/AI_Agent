@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 from langchain.tools import tool, ToolRuntime
 
+'''
+Example tools taken from the LangChain documentation.
+'''
+
 @tool
 def get_weather_for_location(city: str) -> str:
     """Get weather for a given city."""
