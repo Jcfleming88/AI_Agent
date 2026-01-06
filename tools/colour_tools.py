@@ -7,11 +7,6 @@ Example tools taken from the LangChain documentation.
 '''
 
 @dataclass
-class Context:
-    """Custom runtime context schema."""
-    user_id: str
-
-@dataclass
 class HLS:
     h: float
     l: float

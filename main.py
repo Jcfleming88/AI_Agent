@@ -2,9 +2,9 @@
 import os
 import re
 import random
+import base64
 
 # LLM components
-from tools.colour_tools import *
 from tools.web_tools import *
 from responses.response import *
 from models.models import *
@@ -20,8 +20,14 @@ from langchain.agents import create_agent
 from langchain.agents.structured_output import ToolStrategy
 from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.memory import InMemorySaver
+from langchain.messages import HumanMessage
 
 load_dotenv()
+
+@dataclass
+class Context:
+    """Custom runtime context schema."""
+    user_id: str
 
 class minico_llm:
     def __init__ (self):
@@ -49,10 +55,6 @@ class minico_llm:
         """
 
         self.tools = [
-            get_colour_hex,
-            get_colour_hls,
-            get_random_colour,
-            get_opposite_colour,
             web_search
         ]
         
@@ -233,4 +235,31 @@ class minico_llm:
 
 if __name__ == "__main__":
     with minico_llm() as mc:
-        mc.run()
+        # Load the image of the fridge
+        image_info = image_to_base64("./images/fridge.jpg")
+
+        config = RunnableConfig(configurable={"thread_id": "1"})
+
+        multimodal_question = HumanMessage(content=[
+            {
+                "type": "text", 
+                "text": 
+                    """
+                    Look at the image of the fridge attached and get a list of food items in the fridge. 
+                    Use the list of ingredients to suggest a recipe I can make, searching the web 
+                    and finding something that I have all or most the ingredients for.
+                    """
+            },
+            {"type": "image", "base64": image_info, "mime_type": "image/jpeg"}
+        ])
+        
+        response = mc.agent.invoke(
+            {"messages": [multimodal_question]},
+            context=Context(user_id="1"),
+            config=config
+        )
+
+        if response:
+            print(response['structured_response'].response)
+        else:
+            print("No response generated.")

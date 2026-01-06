@@ -6,5 +6,8 @@ class ResponseFormat:
     """Response schema for the agent."""
     # A response (always required)
     response: str
-    # Coding languages used (optional)
-    languages: list[str] | None = None
+
+    # Recipe info (optional)
+    ingredients: list[str] | None = None
+    steps: list[str] | None = None
+    url: str | None = None
