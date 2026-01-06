@@ -1,14 +1,20 @@
+# System imports
 import os
 import re
 import random
 
+# LLM components
 from tools.colour_tools import *
+from tools.web_tools import *
 from responses.response import *
 from models.models import *
+
+# Utility functions
 from utils.dictutils import *
 from utils.fileutils import *
 from utils.strutils import *
 
+# External libraries
 from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain.agents.structured_output import ToolStrategy
@@ -33,7 +39,7 @@ class minico_llm:
         }
 
         self.system_prompt = f"""
-        You are an assistant named {self.name} and created by {self.creator}. You're job is to help the user get things done quicker.
+        You are a version {self.version} assistant named {self.name} and created by {self.creator}. You're job is to help the user get things done quicker.
         
         Your responses should be concise and informative with examples where applicable. You should use any of the tools avaliable 
         to you to get information needed to answer the user's questions.
@@ -47,12 +53,13 @@ class minico_llm:
             get_colour_hls,
             get_random_colour,
             get_opposite_colour,
+            web_search
         ]
         
         self.checkpointer = InMemorySaver()
 
         self.agent = create_agent(
-            model=llm_basic,  # Default model
+            model=llm_basic,
             system_prompt=self.system_prompt,
             tools=self.tools,
             context_schema=Context,
