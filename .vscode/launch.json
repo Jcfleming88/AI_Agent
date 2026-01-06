@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "python": "C:/Users/jcfle/miniconda3/envs/AI/python.exe"
+            "python": "C:/Users/jcfle/miniconda3/envs/AI/python.exe",
         }
     ]
 }
