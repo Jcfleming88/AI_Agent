@@ -1,8 +1,0 @@
-{
-    "python.defaultInterpreterPath": "C:/Users/jcfle/miniconda3/envs/AI/python.exe",
-    "python.analysis.extraPaths": [
-        "C:/Users/jcfle/miniconda3/envs/AI/Lib/site-packages"
-    ],
-    "python.languageServer": "Pylance",
-    "python.terminal.activateEnvironment": true
-}
