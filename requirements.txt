@@ -3,6 +3,7 @@ wikipedia
 langchain-openai
 langchain-community
 langchain-anthropic
+langchain-mcp-adapters
 python-dotenv
 pydantic
 pandas
