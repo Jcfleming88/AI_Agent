@@ -1,4 +1,5 @@
 import colorsys
+import random
 from dataclasses import dataclass
 from langchain.tools import tool, ToolRuntime
 
@@ -55,7 +56,7 @@ def get_colour_hls(rgb: str) -> HLS:
     return HLS(h=h, l=l, s=s)
 
 @tool
-def get_random_colour(index: int) -> str:
+def get_random_colour() -> str:
     """
     Generates a unique and varied colour (in hex format) based on the provided index.
     
@@ -65,9 +66,11 @@ def get_random_colour(index: int) -> str:
         A string representing the colour in hexadecimal format (e.g., "#rrggbb").
     """
     golden_ratio = (1 + 5**0.5) / 2
+    
+    index = random.randint(0, 1000000)
     hue = (index * golden_ratio) % 1
-    saturation = 0.8
-    lightness = 0.6
+    saturation = (index * golden_ratio**2) % 0.4 + 0.5  # Varies between 0.5 and 0.9
+    lightness = (index * golden_ratio**3) % 0.4 + 0.3   # Varies between 0.3 and 0.7
 
     r, g, b = colorsys.hls_to_rgb(hue, lightness, saturation)
     return '#%02x%02x%02x' % (int(r * 255), int(g * 255), int(b * 255))
@@ -86,3 +89,6 @@ def get_opposite_colour(rgb: str) -> str:
     opposite_hue = (hls.h + 0.5) % 1.0
     r, g, b = colorsys.hls_to_rgb(opposite_hue, hls.l, hls.s)
     return get_colour_hex.invoke({"r": r, "g": g, "b": b})
+
+if __name__ == "__main__":
+    print(get_random_colour.invoke({}))
