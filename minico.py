@@ -2,13 +2,18 @@
 import os
 import re
 import random
-import asyncio
 
 # LLM components
+from context.context import *
 from tools.colour_tools import *
 from tools.web_tools import *
 from responses.response import *
 from models.models import *
+from context.context import *
+from states.states import *
+
+# Sub agents
+from subagents.flightagent import *
 
 # Utility functions
 from utils.dictutils import *
@@ -28,56 +33,30 @@ load_dotenv()
 class minico_llm:
     def __init__ (self):
         
-        self.name = "MiniCo"
-        self.version = "2.0"
+        self.name = "TravelCo"
+        self.version = "1.0"
         self.creator = "Neonwolf"
 
         self.states = {
             "running": True,
         }
 
-        self.user_state = {
-            "plang": None,
-        }
-
-        self.system_prompt = f"""
-        You are a version {self.version} assistant named {self.name} and created by {self.creator}. You're job is to help the user get things done quicker.
-        
-        Your responses should be concise and informative with examples where applicable. You should use any of the tools avaliable 
-        to you to get information needed to answer the user's questions.
-
-        If asked a coding question and you're unsure what langauge the user is working in then you should ask them for clarification unless 
-        the last used language is known.
-        """
-
-        self.client = MultiServerMCPClient(
-            # Example of how to load in a local MCP server
-            # {
-            #     "local_server": {
-            #         "transport": "stdio",
-            #         "command": "python",
-            #         "args": ["./tools/local_tools.py"],
-            #     }
-            # }
-        )
-        self.internal_tools = [
-            get_colour_hex,
-            get_colour_hls,
-            get_opposite_colour,
-            get_random_colour,
-            web_search
-        ]
-        self.external_tools = asyncio.run(self.client.get_tools())
-
         #self.checkpointer = InMemorySaver()
-
         self.agent = create_agent(
             model=llm_basic,
-            system_prompt=self.system_prompt,
-            tools=self.internal_tools + self.external_tools,
+            system_prompt=f"""
+            You are a version {self.version} AI Travel Agent named {self.name} and created by {self.creator}. You're job is to help the user find 
+            travel to book.
+            
+            You have a series of sub agents that can help with booking flights, accommodation, and activities. You should use there to get different 
+            parts of a trip planned. You should also be able to provide information about destinations, travel tips, and more.
+
+            You also have an agent that can suggest popular attractions within the area the user is travelling to.
+            """,
+            tools=state_tools + flight_tools,
             context_schema=Context,
-            response_format=ToolStrategy(ResponseFormat),
-            #checkpointer=self.checkpointer,
+            state_schema=MainState,
+            response_format=ToolStrategy(MainResponse),
         )
 
         self.__load_files()
